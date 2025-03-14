@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pyrestforpipelines
+  labels:
+    app: pyrestforpipelines
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pyrestforpipelines
+  template:
+    metadata:
+      labels:
+        app: pyrestforpipelines
+    spec:
+      containers:
+      - name: pyrestforpipelines
+        image: harbor.freshbrewed.science/freshbrewedprivate/pyrestforpipelines:latest
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /approved
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      imagePullSecrets:
+      - name: myharborreg
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pyrestforpipelines-service
+spec:
+  selector:
+    app: pyrestforpipelines
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: ClusterIP
