@@ -1,0 +1,17 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: Docker@2
+  displayName: 'Build and Push the image'
+  inputs:
+    containerRegistry: harborcr
+    repository: freshbrewedprivate/pyRestForPipelines
+    Dockerfile: Dockerfile
+    tags: |
+     $(Build.BuildId)
+     latest
+
